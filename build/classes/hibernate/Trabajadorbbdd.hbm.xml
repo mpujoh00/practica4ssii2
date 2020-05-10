@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 09-mar-2020 21:19:24 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+  <class catalog="base_de_datos" name="clases.Trabajadorbbdd" optimistic-lock="version" table="trabajadorbbdd">
+    <id name="idTrabajador" type="int">
+      <column name="idTrabajador"/>
+      <generator class="assigned"/>
+    </id>
+    <many-to-one class="clases.Categorias" fetch="select" name="categorias">
+      <column name="IdCategoria" not-null="true"/>
+    </many-to-one>
+    <many-to-one class="clases.Empresas" fetch="select" name="empresas">
+      <column name="IdEmpresa" not-null="true"/>
+    </many-to-one>
+    <property name="nombre" type="string">
+      <column length="50" name="Nombre" not-null="true"/>
+    </property>
+    <property name="apellido1" type="string">
+      <column length="75" name="Apellido1" not-null="true"/>
+    </property>
+    <property name="apellido2" type="string">
+      <column length="75" name="Apellido2"/>
+    </property>
+    <property name="nifnie" type="string">
+      <column length="10" name="NIFNIE"/>
+    </property>
+    <property name="email" type="string">
+      <column length="75" name="email"/>
+    </property>
+    <property name="fechaAlta" type="date">
+      <column length="10" name="FechaAlta"/>
+    </property>
+    <property name="codigoCuenta" type="string">
+      <column length="20" name="CodigoCuenta"/>
+    </property>
+    <property name="iban" type="string">
+      <column length="24" name="IBAN"/>
+    </property>
+    <set fetch="select" inverse="true" lazy="true" name="nominas" table="nomina">
+      <key>
+        <column name="IdTrabajador" not-null="true"/>
+      </key>
+      <one-to-many class="clases.Nomina"/>
+    </set>
+  </class>
+</hibernate-mapping>

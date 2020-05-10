@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 09-mar-2020 21:19:24 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+  <class catalog="base_de_datos" name="clases.Categorias" optimistic-lock="version" table="categorias">
+    <id name="idCategoria" type="int">
+      <column name="IdCategoria"/>
+      <generator class="assigned"/>
+    </id>
+    <property name="nombreCategoria" type="string">
+      <column length="75" name="NombreCategoria" not-null="true"/>
+    </property>
+    <property name="salarioBaseCategoria" type="double">
+      <column name="SalarioBaseCategoria" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="complementoCategoria" type="double">
+      <column name="ComplementoCategoria" not-null="true" precision="22" scale="0"/>
+    </property>
+    <set fetch="select" inverse="true" lazy="true" name="trabajadorbbdds" table="trabajadorbbdd">
+      <key>
+        <column name="IdCategoria" not-null="true"/>
+      </key>
+      <one-to-many class="clases.Trabajadorbbdd"/>
+    </set>
+  </class>
+</hibernate-mapping>

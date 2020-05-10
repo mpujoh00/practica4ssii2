@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 09-mar-2020 21:19:24 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+  <class catalog="base_de_datos" name="clases.Nomina" optimistic-lock="version" table="nomina">
+    <id name="idNomina" type="int">
+      <column name="IdNomina"/>
+      <generator class="assigned"/>
+    </id>
+    <many-to-one class="clases.Trabajadorbbdd" fetch="select" name="trabajadorbbdd">
+      <column name="IdTrabajador" not-null="true"/>
+    </many-to-one>
+    <property name="mes" type="int">
+      <column name="Mes" not-null="true"/>
+    </property>
+    <property name="anio" type="int">
+      <column name="Anio" not-null="true"/>
+    </property>
+    <property name="numeroTrienios" type="int">
+      <column name="NumeroTrienios" not-null="true"/>
+    </property>
+    <property name="importeTrienios" type="double">
+      <column name="ImporteTrienios" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="importeSalarioMes" type="double">
+      <column name="importeSalarioMes" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="importeComplementoMes" type="double">
+      <column name="importeComplementoMes" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="valorProrrateo" type="double">
+      <column name="ValorProrrateo" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="brutoAnual" type="double">
+      <column name="brutoAnual" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="irpf" type="double">
+      <column name="IRPF" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="importeIrpf" type="double">
+      <column name="ImporteIRPF" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="baseEmpresario" type="double">
+      <column name="BaseEmpresario" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="seguridadSocialEmpresario" type="double">
+      <column name="SeguridadSocialEmpresario" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="importeSeguridadSocialEmpresario" type="double">
+      <column name="ImporteSeguridadSocialEmpresario" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="desempleoEmpresario" type="double">
+      <column name="DesempleoEmpresario" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="importeDesempleoEmpresario" type="double">
+      <column name="ImporteDesempleoEmpresario" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="formacionEmpresario" type="double">
+      <column name="FormacionEmpresario" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="importeFormacionEmpresario" type="double">
+      <column name="ImporteFormacionEmpresario" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="accidentesTrabajoEmpresario" type="double">
+      <column name="AccidentesTrabajoEmpresario" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="importeAccidentesTrabajoEmpresario" type="double">
+      <column name="ImporteAccidentesTrabajoEmpresario" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="fogasaempresario" type="double">
+      <column name="FOGASAEmpresario" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="importeFogasaempresario" type="double">
+      <column name="ImporteFOGASAEmpresario" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="seguridadSocialTrabajador" type="double">
+      <column name="SeguridadSocialTrabajador" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="importeSeguridadSocialTrabajador" type="double">
+      <column name="ImporteSeguridadSocialTrabajador" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="desempleoTrabajador" type="double">
+      <column name="DesempleoTrabajador" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="importeDesempleoTrabajador" type="double">
+      <column name="ImporteDesempleoTrabajador" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="formacionTrabajador" type="double">
+      <column name="FormacionTrabajador" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="importeFormacionTrabajador" type="double">
+      <column name="ImporteFormacionTrabajador" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="brutoNomina" type="double">
+      <column name="BrutoNomina" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="liquidoNomina" type="double">
+      <column name="LiquidoNomina" not-null="true" precision="22" scale="0"/>
+    </property>
+    <property name="costeTotalEmpresario" type="double">
+      <column name="CosteTotalEmpresario" not-null="true" precision="22" scale="0"/>
+    </property>
+  </class>
+</hibernate-mapping>
