@@ -60,7 +60,7 @@ public class Excel {
     
     // HASHMAP
     
-     public ArrayList<Categorias> getCategorias(){ //hoja 2
+     public static ArrayList<Categorias> getCategorias(){ //hoja 2
         
         XSSFSheet hoja = excel.getSheetAt(1);
         

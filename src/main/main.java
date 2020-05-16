@@ -11,6 +11,8 @@ import excel.emails;
 import excel.nifs;
 import excel.nominas;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Scanner;
 
 import xml.xml;
@@ -26,9 +28,9 @@ public class main {
      */
     public static void main(String[] args) {    
     	
-    	Scanner sc = new Scanner(System.in);
+    	/*Scanner sc = new Scanner(System.in);
        
-    	System.out.println("Introduzca el mes y el año del que se desea generar las nóminas:");
+    	System.out.println("Introduzca el mes y el año del que desea generar las nóminas:");
     	String fecha = sc.nextLine();
     	
     	String f[] = fecha.split("/");
@@ -36,7 +38,12 @@ public class main {
     	int anyo = Integer.parseInt(f[1]);
     	
         nominas noms = new nominas();
-        noms.generaNominas(mes, anyo);
+        noms.generaNominas(mes, anyo);*/
+        
+        Calendar alta = new GregorianCalendar(2011,5,1);
+        Calendar nomina = new GregorianCalendar(2020,4,2);
+        
+        System.out.println((nomina.get(Calendar.YEAR) - alta.get(Calendar.YEAR))/3);
         
         /*nifs nif = new nifs();
         nif.corrigeNifs();
