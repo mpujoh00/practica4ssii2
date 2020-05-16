@@ -6,6 +6,9 @@ import static excel.Excel.filaVacia;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -30,8 +33,9 @@ public class nominas {
         for(int i = 1; i <= hoja.getLastRowNum(); i++){ // genera la nómina de cada trabajador
             
             fila = hoja.getRow(i);
+            Cell celda = fila.getCell(7);
                                 
-            if(!filaVacia(fila)){
+            if(celda != null && celda.getCellType() != CellType.BLANK && StringUtils.isNotBlank(celda.toString()) && !filaVacia(fila)){
                 
                 generaNominaTrabajador(mes, anyo, fila);
             }
@@ -68,7 +72,7 @@ public class nominas {
         // obtengo la categoría del trabajador
         
         String nombreCat = trabajador.getCell(2).getStringCellValue();
-        Categorias categoria;
+        Categorias categoria = new Categorias();
         
         for(Categorias cat: categorias){
             
@@ -77,6 +81,37 @@ public class nominas {
                 categoria = cat;
             }
         }
+        
+        // compruebo si es con o sin prorrateo
+        
+        String prorrateo = trabajador.getCell(12).getStringCellValue();
+        
+        if(prorrateo.equals("SI")){
+            generaNominaConProrrateo(fechaAlta, fechaNomina, categoria);
+        }
+        else if(prorrateo.equals("NO")){
+            generaNominaSinProrrateo();
+        }
+        
+        
+        
+        
+    }
+    
+    private void generaNominaConProrrateo(Calendar fechaAlta, Calendar fechaNomina, Categorias categoria){
+        
+        double brutoAnual = categoria.getSalarioBaseCategoria() + categoria.getComplementoCategoria(); 
+        
+        if(fechaNomina.get(Calendar.YEAR) == fechaAlta.get(Calendar.YEAR) && fechaAlta.get(Calendar.MONTH) != 1){ // si no ha trabajado todo el año
+                     
+        }
+        else{
+            
+        }
+    }
+    
+    private void generaNominaSinProrrateo(){
+        
         
     }
 	
