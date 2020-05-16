@@ -6,29 +6,37 @@
 package main;
 
 import excel.Excel;
-import excel.cuentas;
-import excel.emails;
-import excel.nifs;
-import excel.nominas;
+import excel.Cuentas;
+import excel.Emails;
+import excel.Nifs;
+import excel.Nominas;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Scanner;
 
-import xml.xml;
+import xml.Xml;
 
 /**
  * @author Micaela Pujol Higueras
  * @author Silvia Matilla García
  */
-public class main {
+public class Main {
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {    
-    	
-    	/*Scanner sc = new Scanner(System.in);
+        
+        Nifs nif = new Nifs();
+        nif.corrigeNifs();
+        Cuentas cuenta = new Cuentas();
+        ArrayList<ArrayList<String>> cuentasErrores = cuenta.corrigeDigitosDeControl();
+        cuenta.iban();
+        Emails email = new Emails();
+        email.email();
+        
+        Scanner sc = new Scanner(System.in);
        
     	System.out.println("Introduzca el mes y el año del que desea generar las nóminas:");
     	String fecha = sc.nextLine();
@@ -37,24 +45,12 @@ public class main {
     	int mes = Integer.parseInt(f[0]);
     	int anyo = Integer.parseInt(f[1]);
     	
-        nominas noms = new nominas();
-        noms.generaNominas(mes, anyo);*/
+        Nominas noms = new Nominas();
+        noms.generaNominas(mes, anyo);
         
-        Calendar alta = new GregorianCalendar(2011,5,1);
-        Calendar nomina = new GregorianCalendar(2020,4,2);
-        
-        System.out.println((nomina.get(Calendar.YEAR) - alta.get(Calendar.YEAR))/3);
-        
-        /*nifs nif = new nifs();
-        nif.corrigeNifs();
-        cuentas cuenta = new cuentas();
-        ArrayList<ArrayList<String>> cuentasErrores = cuenta.corrigeDigitosDeControl();
-        cuenta.iban();
-        emails email = new emails();
-        email.email();
         Excel.close();
     
-        xml xml = new xml();
+        /*Xml xml = new Xml();
         xml.creaFicheroErrores();
         xml.creaFicheroErroresCCC(cuentasErrores);*/
     	

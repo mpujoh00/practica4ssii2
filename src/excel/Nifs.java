@@ -17,11 +17,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  *
  * @author maybeitsmica
  */
-public class nifs {
+public class Nifs {
     
     XSSFWorkbook excel;
     
-    public nifs(){
+    public Nifs(){
         
         excel = Excel.getExcel();        
     }

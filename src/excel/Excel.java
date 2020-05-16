@@ -10,6 +10,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -60,13 +63,13 @@ public class Excel {
     
     // HASHMAP
     
-     public static ArrayList<Categorias> getCategorias(){ //hoja 2
+     public static List<Categorias> getCategorias(){ //hoja 2
         
         XSSFSheet hoja = excel.getSheetAt(1);
         
         Row fila;
         
-        ArrayList<Categorias> categorias = new ArrayList<>(hoja.getLastRowNum()-1);
+        List<Categorias> categorias = new ArrayList<>(hoja.getLastRowNum()-1);
         
         for(int i = 1; i <= hoja.getLastRowNum(); i++){
             
@@ -78,48 +81,65 @@ public class Excel {
             categorias.add(cat);
         } 
         
-        for(Categorias cat: categorias) {
-        	
-        	System.out.println(cat.toString());
-        }
-        
         return categorias;
     }
+
+    public static Categorias getCategoriaPorNombre(String nombreCategoria){
+        List<Categorias> categorias = getCategorias();
+        for(Categorias cat : categorias){
+            if(cat.getNombreCategoria().equals(nombreCategoria)){
+                return cat;
+            }
+        }
+        return null;
+    }
     
-    public HashMap<Double, Double> getRetenciones(){ //hoja 3
+    public static Map<Integer, Double> getRetenciones(){ //hoja 3
         
         XSSFSheet hoja = excel.getSheetAt(2);
         
         Row fila;
         
         //definir un HashMap
-        HashMap<Double, Double> retenciones = new HashMap<Double, Double>();
+        Map<Integer, Double> retenciones = new HashMap<>();
                 
         for(int i = 1; i <= hoja.getLastRowNum(); i++){
             
             fila = hoja.getRow(i);
             
             //insertar valores "key"-"value" al HashMap
-            retenciones.put(Double.parseDouble(fila.getCell(0).toString()), Double.parseDouble(fila.getCell(1).toString()));            
-        }
-                
-        for(Double key: retenciones.keySet()) {
-        	
-        	System.out.println(key + ", " + retenciones.get(key));
+            retenciones.put((int) fila.getCell(0).getNumericCellValue(), fila.getCell(1).getNumericCellValue());
         }
         
         return retenciones;
         
     }
+
+    public static double getRetencion(double salario){
+        Map<Integer, Double> retenciones = getRetenciones();
+        int salarioRedondeado = (int) Math.ceil(salario / 1000) * 1000;
+        System.out.println("Redondeado: " + salarioRedondeado);
+        double valorObtenido = retenciones.getOrDefault(salarioRedondeado, 0.0);
+        if(valorObtenido == 0){
+            if(salario > 60000){
+                valorObtenido = retenciones.getOrDefault(60000, -1.0);
+            }else if(salario < 12000){
+                valorObtenido = retenciones.getOrDefault(12000, -1.0);
+            }
+        }
+        System.out.println("IRPF: " + valorObtenido);
+        
+        return valorObtenido;
+    }
     
-    public HashMap<String, Double> getValores(){ //hoja 4
+    public static Map<String, Double> getValores(){ //hoja 4
         
         XSSFSheet hoja = excel.getSheetAt(3);
         
         Row fila;
         
         //definir un HashMap
-        HashMap<String, Double> valores = new HashMap<String, Double>();
+        Map<String, Double> valores = new HashMap<>();
                 
         for(int i = 0; i <= hoja.getLastRowNum(); i++){
             
@@ -129,34 +149,23 @@ public class Excel {
             valores.put(fila.getCell(0).toString(), Double.parseDouble(fila.getCell(1).toString()));
         }
         
-        for(String key: valores.keySet()) {
-        	
-        	System.out.println(key + ", " + valores.get(key));
-        }
-        
         return valores;
     }
     
-    public HashMap<Double, Double> getTrienios(){ //hoja 5
+    public static Map<Integer, Integer> getTrienios(){ //hoja 5
         
         XSSFSheet hoja = excel.getSheetAt(4);
         
         Row fila;
         
         //definir un HashMap
-        HashMap<Double, Double> trienios = new HashMap<Double, Double>();
-                
+        Map<Integer, Integer> trienios = new HashMap<>();
         for(int i = 1; i <= hoja.getLastRowNum(); i++){
             
             fila = hoja.getRow(i);
             
             //insertar valores "key"-"value" al HashMap
-            trienios.put(Double.parseDouble(fila.getCell(0).toString()), Double.parseDouble(fila.getCell(1).toString()));
-        }
-        
-        for(Double key: trienios.keySet()) {
-        	
-        	System.out.println(key + ", " + trienios.get(key));
+            trienios.put((int) fila.getCell(0).getNumericCellValue(), (int) fila.getCell(1).getNumericCellValue());
         }
         
         return trienios;

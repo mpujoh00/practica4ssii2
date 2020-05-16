@@ -3,9 +3,11 @@ package excel;
 import clases.Categorias;
 import clases.Nomina;
 import static excel.Excel.filaVacia;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -13,19 +15,19 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-public class nominas {
+public class Nominas {
 
     XSSFWorkbook excel;
-    ArrayList<Nomina> nominas;
-    ArrayList<Categorias> categorias;
+    List<Nomina> nominas;
+    List<Categorias> categorias;
     
-    public nominas(){
+    public Nominas(){
         
         excel = Excel.getExcel();
         categorias = Excel.getCategorias();
     }
     
-    public void generaNominas(int mes, int anyo) {
+    public void generaNominas(int mes, int anyo){
 
         XSSFSheet hoja = excel.getSheetAt(0); // hoja de trabajadores
         Row fila;
@@ -36,83 +38,106 @@ public class nominas {
             Cell celda = fila.getCell(7);
                                 
             if(celda != null && celda.getCellType() != CellType.BLANK && StringUtils.isNotBlank(celda.toString()) && !filaVacia(fila)){
-                
-                generaNominaTrabajador(mes, anyo, fila);
+                try {
+                    generaNominaTrabajador(mes, anyo, fila);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
+
     
-    private void generaNominaTrabajador(int mes, int anyo, Row trabajador){
+    private void generaNominaTrabajador(int mes, int anyo, Row trabajador) throws ParseException {
         
         // comprueba si se ha de generar la nómina
+        Date fechaAltaTrabajador = trabajador.getCell(3).getDateCellValue();
+        Calendar fechaAltaCalendar = Calendar.getInstance();
+        fechaAltaCalendar.setTime(fechaAltaTrabajador);
+
+        Calendar fechaNominaCalendar = new GregorianCalendar(anyo, mes-1, 2);
         
-        String fecha = trabajador.getCell(3).getStringCellValue();
-        String f[] = fecha.split("/");
-        int d = Integer.parseInt(f[0]);
-    	int m = Integer.parseInt(f[1]);
-    	int a = Integer.parseInt(f[2]);
-        
-        Calendar fechaAlta = new GregorianCalendar(a, m, d);
-        Calendar fechaNomina = new GregorianCalendar(anyo, mes, 2);
-        
-        if(fechaAlta.after(fechaNomina)){ // aún no estaba en la empresa
+        if(fechaAltaCalendar.after(fechaNominaCalendar)){ // aún no estaba en la empresa
+            System.out.println("El trabajador aun no estaba en la empresa: " + fechaAltaTrabajador.toString());
             return;
         }
-        
+
         // calcula la antigüedad del trabajador (trienios)
-        
-        int anyosTrabajados = fechaNomina.get(Calendar.YEAR) - fechaAlta.get(Calendar.YEAR);
-        int trienios = anyosTrabajados/3;
-        
-        if(fechaNomina.get(Calendar.MONTH) - fechaAlta.get(Calendar.MONTH) <= 0){
-            
-            trienios--;
-        }
-        
+        int trienios = getTrienios(fechaAltaCalendar, fechaNominaCalendar);
+        System.out.println("Trienios: " + trienios + " Alta: " + fechaAltaTrabajador.toString() + " nomina " + mes + "/" + anyo);
+
         // obtengo la categoría del trabajador
-        
         String nombreCat = trabajador.getCell(2).getStringCellValue();
-        Categorias categoria = new Categorias();
-        
-        for(Categorias cat: categorias){
-            
-            if(cat.getNombreCategoria().equals(nombreCat)){
-                
-                categoria = cat;
-            }
+        Categorias categoria = Excel.getCategoriaPorNombre(nombreCat);
+        System.out.println("EL trabajador es: " + categoria.getNombreCategoria());
+        String prorrateoString = trabajador.getCell(12).getStringCellValue();
+        boolean prorrateo = false;
+        if(prorrateoString.equals("SI")){
+            prorrateo = true;
+        } else if(prorrateoString.equals("NO")){
+            prorrateo = false;
         }
-        
-        // compruebo si es con o sin prorrateo
-        
-        String prorrateo = trabajador.getCell(12).getStringCellValue();
-        
-        if(prorrateo.equals("SI")){
-            generaNominaConProrrateo(fechaAlta, fechaNomina, categoria);
-        }
-        else if(prorrateo.equals("NO")){
-            generaNominaSinProrrateo();
-        }
-        
-        
-        
-        
-    }
-    
-    private void generaNominaConProrrateo(Calendar fechaAlta, Calendar fechaNomina, Categorias categoria){
-        
-        double brutoAnual = categoria.getSalarioBaseCategoria() + categoria.getComplementoCategoria(); 
-        
-        if(fechaNomina.get(Calendar.YEAR) == fechaAlta.get(Calendar.YEAR) && fechaAlta.get(Calendar.MONTH) != 1){ // si no ha trabajado todo el año
-                     
-        }
-        else{
-            
+        boolean esPagaExtra = !prorrateo && (fechaNominaCalendar.get(Calendar.MONTH) == Calendar.JUNE || fechaNominaCalendar.get(Calendar.MONTH) == Calendar.DECEMBER);
+        calcularNomina(prorrateo, fechaAltaCalendar, fechaNominaCalendar, categoria, trienios, false);
+        System.out.println(esPagaExtra + " " + fechaNominaCalendar.get(Calendar.MONTH));
+        if(esPagaExtra){
+            System.out.println("Generando Extra:");
+            calcularNomina(prorrateo, fechaAltaCalendar, fechaNominaCalendar, categoria, trienios, true);
         }
     }
-    
-    private void generaNominaSinProrrateo(){
-        
-        
+
+    private double calcularNomina(boolean prorrateo, Calendar fechaAltaCalendar, Calendar fechaNominaCalendar, Categorias categoria, int trienios, boolean esExtra){
+        double dineroPorTrienios = Excel.getTrienios().getOrDefault(trienios, 0);
+        System.out.println("Dinero por trienios: " + dineroPorTrienios);
+        double brutoAnual = categoria.getSalarioBaseCategoria() + categoria.getComplementoCategoria() + dineroPorTrienios*14;
+        double brutoMensual = brutoAnual / 14;
+        if(prorrateo){
+            double parteExtra = calcularNomina(false, fechaAltaCalendar, fechaNominaCalendar, categoria, trienios, true) / 6;
+            brutoMensual = brutoMensual + parteExtra;
+        }
+        System.out.println("Salario base: " + brutoAnual/12);
+        double retenciones = getRetenciones(brutoMensual, brutoAnual, esExtra);
+        System.out.println("Bruto Anual: " + brutoAnual + ", Bruto Mensual: " + brutoMensual + " retencion:" + retenciones);
+        double liquidoMensual = brutoMensual - retenciones;
+        System.out.println("Liquido Mensual: " + liquidoMensual);
+        double costeEmpresario = brutoMensual + getRetencionesEmpresario(brutoMensual);
+        System.out.println("Coste Empresario: " + costeEmpresario);
+
+        return liquidoMensual;
+    }
+
+    private double getRetenciones(double brutoMensual, double brutoAnual, boolean pagaExtra){
+        Map<String, Double> valorRetenciones = Excel.getValores();
+        double retencionSSocial = brutoAnual/12 * valorRetenciones.get("Cuota obrera general TRABAJADOR") / 100;
+        double desempleo = brutoAnual/12 * valorRetenciones.get("Cuota desempleo TRABAJADOR") / 100;
+        double formacion = brutoAnual/12 * valorRetenciones.get("Cuota formación TRABAJADOR") / 100;
+        double porcentajeIrpf = Excel.getRetencion(brutoAnual);
+        double irpf = brutoMensual * porcentajeIrpf / 100;
+
+        if(pagaExtra){
+            return irpf;
+        }
+
+        return retencionSSocial + desempleo + formacion + irpf;
+    }
+
+    private double getRetencionesEmpresario(double brutoMensual){
+        Map<String, Double> valorRetenciones = Excel.getValores();
+        double sSocialEmpresario = brutoMensual * valorRetenciones.get("Contingencias comunes EMPRESARIO") / 100;
+        double desempleo = brutoMensual * valorRetenciones.get("Desempleo EMPRESARIO") / 100;
+        double fogasa = brutoMensual * valorRetenciones.get("Fogasa EMPRESARIO") / 100;
+        double formacion = brutoMensual * valorRetenciones.get("Formacion EMPRESARIO") / 100;
+        double accidentesTrabajo = brutoMensual * valorRetenciones.get("Accidentes trabajo EMPRESARIO") / 100;
+
+        return sSocialEmpresario + desempleo + fogasa + formacion + accidentesTrabajo;
+    }
+
+    private int getTrienios(Calendar fechaAltaCalendar, Calendar fechaNominaCalendar){
+        int diffInYears = fechaNominaCalendar.get(Calendar.YEAR) - fechaAltaCalendar.get(Calendar.YEAR); //Numero de años de diferencia
+        if (fechaAltaCalendar.get(Calendar.MONTH) > fechaNominaCalendar.get(Calendar.MONTH)) {
+            diffInYears--;
+        }
+        return diffInYears/3;
     }
 	
 }

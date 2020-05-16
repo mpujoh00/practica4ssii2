@@ -18,11 +18,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  *
  * @author maybeitsmica
  */
-public class cuentas {
+public class Cuentas {
     
     XSSFWorkbook excel;
     
-    public cuentas(){
+    public Cuentas(){
         
         excel = Excel.getExcel();
     }

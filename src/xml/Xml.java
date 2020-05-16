@@ -31,13 +31,13 @@ import org.w3c.dom.Element;
  * @author Micaela Pujol Higueras
  * @author Silvia Matilla García
  */
-public class xml {
+public class Xml {
     
     String rutaArchivo = "./resources/SistemasInformacionII.xlsx";
     XSSFWorkbook excel;
     XSSFSheet hoja;
     
-    public xml() {
+    public Xml() {
         
         excel = Excel.getExcel();        
     }

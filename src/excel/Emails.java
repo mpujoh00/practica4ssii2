@@ -19,11 +19,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  *
  * @author maybeitsmica
  */
-public class emails {
+public class Emails {
     
     XSSFWorkbook excel;
     
-    public emails(){
+    public Emails(){
         
         excel = Excel.getExcel();
     }
