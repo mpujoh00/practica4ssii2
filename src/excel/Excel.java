@@ -118,7 +118,6 @@ public class Excel {
     public static double getRetencion(double salario){
         Map<Integer, Double> retenciones = getRetenciones();
         int salarioRedondeado = (int) Math.ceil(salario / 1000) * 1000;
-        System.out.println("Redondeado: " + salarioRedondeado);
         double valorObtenido = retenciones.getOrDefault(salarioRedondeado, 0.0);
         if(valorObtenido == 0){
             if(salario > 60000){
@@ -127,7 +126,6 @@ public class Excel {
                 valorObtenido = retenciones.getOrDefault(12000, -1.0);
             }
         }
-        System.out.println("IRPF: " + valorObtenido);
         
         return valorObtenido;
     }
