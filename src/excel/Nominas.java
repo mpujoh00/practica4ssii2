@@ -108,14 +108,12 @@ public class Nominas {
         }
         
         // calcula la nómina
-        // System.out.println("NÓMINA " + mes + "/" + anyo);
         nomina.setEsExtra(false);
         calcularNomina(prorrateo, categoria, trienios, false, cambioTrienio, fechaAltaCalendar, fechaNominaCalendar);
         
         // calcula la extra, si corresponde
         boolean esPagaExtra = !prorrateo && (fechaNominaCalendar.get(Calendar.MONTH) == Calendar.JUNE || fechaNominaCalendar.get(Calendar.MONTH) == Calendar.DECEMBER);
         if(esPagaExtra){
-            //System.out.println("EXTRA " + mes + "/" + anyo);
             System.out.println(nomina.toString()); // imprime la nomina normal
             nominas.add(nomina);
             nomina = new Nomina(++contNominas);
@@ -148,11 +146,12 @@ public class Nominas {
         }else{
             totalTrienios = dineroMensualPorTrieniosNuevo*14;
         }
-        int trieniosMes = getTrieniosMes(fechaAltaCalendar, fechaNominaCalendar);
+        int trieniosMesActual = getTrieniosMes(fechaAltaCalendar, fechaNominaCalendar);
+        double importeTrienioActual = Excel.getTrienios().getOrDefault(trieniosMesActual, 0);
         double salarioBase = categoria.getSalarioBaseCategoria();
         double complemento = categoria.getComplementoCategoria();
         double brutoAnual = redondea(salarioBase + complemento + totalTrienios);
-        double brutoMensual = redondea(salarioBase/14 + complemento/14 + dineroMensualPorTrieniosNuevo);
+        double brutoMensual = redondea(salarioBase/14 + complemento/14 + importeTrienioActual);
         double prorrateoExtra = redondea(brutoMensual/6);
         double calculoBase = redondea(brutoMensual + prorrateoExtra);
         if(prorrateo){
@@ -168,8 +167,8 @@ public class Nominas {
         // coste empresario
         double costeEmpresario = getRetencionesEmpresario(calculoBase, esExtra);
         
-        nomina.setNumeroTrienios(trieniosMes);
-        nomina.setImporteTrienios(Excel.getTrienios().getOrDefault(trieniosMes, 0));
+        nomina.setNumeroTrienios(trieniosMesActual);
+        nomina.setImporteTrienios(Excel.getTrienios().getOrDefault(trieniosMesActual, 0));
         nomina.setImporteSalarioMes(redondea(salarioBase/14));
         nomina.setImporteComplementoMes(redondea(complemento/14));
         nomina.setValorProrrateo(prorrateoExtra);
