@@ -85,6 +85,10 @@ public class Nominas {
         }
         System.out.println("\n" + trabajador.getCell(4).getStringCellValue() + " " + apellidos);
         
+        if(trabajador.getCell(4).getStringCellValue().equals("Rocío")){
+            System.out.println("jeje it's me bitch");
+        }
+        
         // calcula la antigüedad del trabajador (trienios)
         boolean cambioTrienio = hayCambioDeTrienio(fechaAltaCalendar, fechaNominaCalendar);
         int trienios = getTrienios(fechaAltaCalendar, fechaNominaCalendar, cambioTrienio);
@@ -140,7 +144,7 @@ public class Nominas {
             totalTrienios = dineroMensualPorTrieniosAnt * (mesesTrienioAnt + 2 - extraNuevo) + dineroMensualPorTrieniosNuevo * (12 - mesesTrienioAnt + extraNuevo);                        
         }else if(hayCambioDeTrienioAnyoSig(fechaAltaCalendar, fechaNominaCalendar)){ // influye por la extra de diciembre (prorrateo y bruto anual)
             double dineroMensualPorTrieniosAnyoSig = Excel.getTrienios().getOrDefault(trienios+1, 0);
-            totalTrienios = dineroMensualPorTrieniosNuevo * 14 + (dineroMensualPorTrieniosNuevo - dineroMensualPorTrieniosAnyoSig) / 6;            
+            totalTrienios = redondea(dineroMensualPorTrieniosNuevo * 14 + (dineroMensualPorTrieniosAnyoSig - dineroMensualPorTrieniosNuevo) / 6);            
         }else{
             totalTrienios = dineroMensualPorTrieniosNuevo*14;
         }
@@ -148,7 +152,7 @@ public class Nominas {
         double salarioBase = categoria.getSalarioBaseCategoria();
         double complemento = categoria.getComplementoCategoria();
         double brutoAnual = redondea(salarioBase + complemento + totalTrienios);
-        double brutoMensual = redondea(categoria.getSalarioBaseCategoria()/14 + categoria.getComplementoCategoria()/14 + trieniosMes);
+        double brutoMensual = redondea(salarioBase/14 + complemento/14 + dineroMensualPorTrieniosNuevo);
         double prorrateoExtra = redondea(brutoMensual/6);
         double calculoBase = redondea(brutoMensual + prorrateoExtra);
         if(prorrateo){
@@ -157,29 +161,17 @@ public class Nominas {
             prorrateoExtra = 0.0;
         }
         
-        // imprime datos importes
-        /*System.out.println("-Importes\n\tSalario base mes: " + redondea(categoria.getSalarioBaseCategoria()/14));
-        System.out.println("\tProrrateo: " + prorrateoExtra);
-        System.out.println("\tComplemento mes: " + redondea(categoria.getComplementoCategoria()/14));
-        System.out.println("\tAntigüedad: " + trienios + " trienios,  Importe mensual: " + dineroMensualPorTrieniosNuevo); // check cuando haya cambio de trienio?
-        */
         // descuentos
         double retenciones = getRetenciones(calculoBase, brutoMensual, brutoAnual, esExtra);
         double liquidoMensual = redondea(brutoMensual - retenciones);
-               
-        // imprime datos trabajador
-        //System.out.println("TOTAL ingresos: " + brutoMensual + "  TOTAL deducciones: " + retenciones);
-        //System.out.println("LÍQUIDO a percibir: " + liquidoMensual);
-        
+                       
         // coste empresario
         double costeEmpresario = getRetencionesEmpresario(calculoBase, esExtra);
-        //System.out.println("TOTAL empresario: " + costeEmpresario);
-        //System.out.println("COSTE TOTAL TRABAJADOR: " + redondea(costeEmpresario+brutoMensual));
         
         nomina.setNumeroTrienios(trieniosMes);
         nomina.setImporteTrienios(Excel.getTrienios().getOrDefault(trieniosMes, 0));
-        nomina.setImporteSalarioMes(salarioBase);
-        nomina.setImporteComplementoMes(complemento);
+        nomina.setImporteSalarioMes(redondea(salarioBase/14));
+        nomina.setImporteComplementoMes(redondea(complemento/14));
         nomina.setValorProrrateo(prorrateoExtra);
         nomina.setBrutoAnual(brutoAnual);
         nomina.setBaseEmpresario(calculoBase);
@@ -214,12 +206,6 @@ public class Nominas {
         nomina.setIrpf(porcentajeIrpf);
         nomina.setImporteIrpf(irpf);        
         
-        // imprime datos
-        /*System.out.println("-Retenciones\n\tContingencias generales, " + porcentajeSSocial + "% de " + calculoBase + ": " + retencionSSocial);
-        System.out.println("\tDesempleo, " + porcentajeDesempleo + "% de " + calculoBase + ": " + desempleo);
-        System.out.println("\tCuota formación, " + porcentajeFormacion + "% de " + calculoBase + ": " + formacion);
-        System.out.println("\tIRPF, " + porcentajeIrpf + "% de " + brutoMensual + ": " + irpf);
-        */
         return redondea(retencionSSocial + desempleo + formacion + irpf);
     }
 
@@ -251,14 +237,6 @@ public class Nominas {
         nomina.setAccidentesTrabajoEmpresario(porcentajeAccidentes);
         nomina.setImporteAccidentesTrabajoEmpresario(accidentesTrabajo);
         
-        // imprime datos
-        /*System.out.println("-Pagos empresario  BASE: " + calculoBase);
-        System.out.println("\tContingencias comunes empresario, " + porcentajeSSocial + "% : " + sSocialEmpresario);
-        System.out.println("\tDesempleo, " + porcentajeDesempleo + "% : " + desempleo);
-        System.out.println("\tFormación, " + porcentajeFormacion + "% : " + formacion);
-        System.out.println("\tAccidentes de trabajo,  " + porcentajeAccidentes + "% : " + accidentesTrabajo);
-        System.out.println("\tFOGASA, " + porcentajeFogasa + "% : " + fogasa);
-        */
         return redondea(sSocialEmpresario + desempleo + fogasa + formacion + accidentesTrabajo);
     }
     
@@ -280,7 +258,7 @@ public class Nominas {
     private boolean hayCambioDeTrienioAnyoSig(Calendar fechaAltaCalendar, Calendar fechaNominaCalendar){
         
         int cambioTrienio = (fechaNominaCalendar.get(Calendar.YEAR) - fechaAltaCalendar.get(Calendar.YEAR)) % 3;
-        if(cambioTrienio == 2 && fechaAltaCalendar.get(Calendar.MONTH) == Calendar.DECEMBER){
+        if(cambioTrienio == 2 && fechaNominaCalendar.get(Calendar.MONTH) == Calendar.DECEMBER){
             return true;
         }else{
             return false;

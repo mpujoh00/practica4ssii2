@@ -337,6 +337,12 @@ public class Nomina  implements java.io.Serializable {
     @Override
     public String toString(){
         
+        double importe, retenciones, totalEmpresario, costeTrabajador;
+        importe = (double) Math.round((importeSalarioMes+valorProrrateo+importeComplementoMes+importeTrienios)*100)/100;
+        retenciones = (double) Math.round((importeSeguridadSocialTrabajador+importeDesempleoTrabajador+importeFormacionTrabajador+importeIrpf)*100)/100;
+        totalEmpresario = (double) Math.round((importeSeguridadSocialEmpresario+importeDesempleoEmpresario+importeFormacionEmpresario+importeAccidentesTrabajoEmpresario+importeFogasaempresario)*100)/100;
+        costeTrabajador = (double) Math.round((importe+totalEmpresario)*100)/100;
+        
         StringBuffer st = new StringBuffer();
         
         if(esExtra){
@@ -355,23 +361,29 @@ public class Nomina  implements java.io.Serializable {
         st.append("Contingencias generales\t" + seguridadSocialTrabajador + "% de " + baseEmpresario + "\t\t\t" + importeSeguridadSocialTrabajador + "\n");
         st.append("Desempleo\t\t" + desempleoTrabajador + "% de " + baseEmpresario + "\t\t\t" + importeDesempleoTrabajador + "\n");
         st.append("Cuota formación\t\t" + formacionTrabajador + "% de " + baseEmpresario + "\t\t\t" + importeFormacionTrabajador + "\n"); 
-        st.append("IRPF\t\t\t" + irpf + "% de " + baseEmpresario + "\t\t\t" + importeIrpf + "\n");
+        st.append("IRPF\t\t\t" + irpf + "% de " + baseEmpresario + "\t\t" + importeIrpf + "\n");
         st.append("_______________________________________________________________________________\n");
-        st.append("Total deducciones\t\t\t\t\t" + (importeSeguridadSocialTrabajador+importeDesempleoTrabajador+importeFormacionTrabajador+importeIrpf) + "\n");
-        st.append("Total devengos\t\t\t\t" + (importeSalarioMes+valorProrrateo+importeComplementoMes+importeTrienios) + "\n");
+        st.append("Total deducciones\t\t\t\t\t" + retenciones + "\n");
+        st.append("Total devengos\t\t\t\t" + importe + "\n");
         st.append("_______________________________________________________________________________\n");
         st.append("\t\t\tLíquido a percibir\t\t" + liquidoNomina + "\n\n");
         st.append("_______________________________________________________________________________\n");
-        st.append("Cálculo empresario: BASE\t\t\t\t" + baseEmpresario + "\n");
+        if(esExtra){
+            st.append("Cálculo empresario: BASE\t\t\t\t" + 0.0 + "\n");
+        }
+        else{
+            st.append("Cálculo empresario: BASE\t\t\t\t" + baseEmpresario + "\n");
+        }
+        
         st.append("_______________________________________________________________________________\n\n");
         st.append("Contingencias comunes empresario " + seguridadSocialEmpresario + "%\t\t\t" + importeSeguridadSocialEmpresario + "\n");
-        st.append("Desempleo " + desempleoEmpresario + "%\t\t\t\t\t" + importeDesempleoEmpresario + "\n");
-        st.append("Formación " + formacionEmpresario + "%\t\t\t\t\t" + importeFormacionEmpresario + "\n");
+        st.append("Desempleo " + desempleoEmpresario + "%\t\t\t\t\t\t" + importeDesempleoEmpresario + "\n");
+        st.append("Formación " + formacionEmpresario + "%\t\t\t\t\t\t" + importeFormacionEmpresario + "\n");
         st.append("Accidentes de trabajo " + accidentesTrabajoEmpresario + "%\t\t\t\t" + importeAccidentesTrabajoEmpresario + "\n");
         st.append("FOGASA " + fogasaempresario + "%\t\t\t\t\t\t" + importeFogasaempresario + "\n");
         st.append("_______________________________________________________________________________\n");
-        st.append("Total empresario\t\t\t\t\t" + (importeSeguridadSocialEmpresario+importeDesempleoEmpresario+importeDesempleoEmpresario+importeAccidentesTrabajoEmpresario+importeFogasaempresario) + "\n\n");
-        st.append("COSTE TOTAL TRABAJADOR:\t\t\t\t\t" + (liquidoNomina+importeSeguridadSocialEmpresario+importeDesempleoEmpresario+importeDesempleoEmpresario+importeAccidentesTrabajoEmpresario+importeFogasaempresario) + "\n");
+        st.append("Total empresario\t\t\t\t\t" + totalEmpresario + "\n\n");
+        st.append("COSTE TOTAL TRABAJADOR:\t\t\t\t\t" + costeTrabajador + "\n");
         
         return st.toString();
     }
