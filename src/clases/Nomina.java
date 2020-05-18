@@ -41,8 +41,10 @@ public class Nomina  implements java.io.Serializable {
      private double brutoNomina;
      private double liquidoNomina;
      private double costeTotalEmpresario;
+     private boolean esExtra;
 
-    public Nomina() {
+    public Nomina(int idNomina) {
+        this.idNomina = idNomina;
     }
 
     public Nomina(int idNomina, Trabajadorbbdd trabajadorbbdd, int mes, int anio, int numeroTrienios, double importeTrienios, double importeSalarioMes, double importeComplementoMes, double valorProrrateo, double brutoAnual, double irpf, double importeIrpf, double baseEmpresario, double seguridadSocialEmpresario, double importeSeguridadSocialEmpresario, double desempleoEmpresario, double importeDesempleoEmpresario, double formacionEmpresario, double importeFormacionEmpresario, double accidentesTrabajoEmpresario, double importeAccidentesTrabajoEmpresario, double fogasaempresario, double importeFogasaempresario, double seguridadSocialTrabajador, double importeSeguridadSocialTrabajador, double desempleoTrabajador, double importeDesempleoTrabajador, double formacionTrabajador, double importeFormacionTrabajador, double brutoNomina, double liquidoNomina, double costeTotalEmpresario) {
@@ -304,8 +306,75 @@ public class Nomina  implements java.io.Serializable {
     public void setCosteTotalEmpresario(double costeTotalEmpresario) {
         this.costeTotalEmpresario = costeTotalEmpresario;
     }
+    
+    public boolean getEsExtra(){
+        return this.esExtra;
+    }
+    
+    public void setEsExtra(boolean esExtra){
+        this.esExtra = esExtra;
+    }
+    
+    public String getMesNombre(){
+        
+        switch(mes){
+            case 1: return "Enero";
+            case 2: return "Febrero";
+            case 3: return "Marzo";
+            case 4: return "Abril";
+            case 5: return "Mayo";
+            case 6: return "Junio";
+            case 7: return "Julio";
+            case 8: return "Agosto";
+            case 9: return "Septiembre";
+            case 10: return "Octubre";
+            case 11: return "Noviembre";
+            case 12: return "Diciembre";
+            default: return "";
+        }
+    }
 
-
+    @Override
+    public String toString(){
+        
+        StringBuffer st = new StringBuffer();
+        
+        if(esExtra){
+            st.append("Nómina: Extra de " + getMesNombre().toLowerCase() + " de " + anio + "\n\n");
+        }
+        else{
+            st.append("Nómina: " + getMesNombre() + " de " + anio + "\n\n");
+        }        
+        st.append("_______________________________________________________________________________\n");
+        st.append("Conceptos\t\tCantidad\tDevengo\t\tDeducción\n");
+        st.append("_______________________________________________________________________________\n");
+        st.append("Salario base\t\t30 días\t\t" + importeSalarioMes + "\n");
+        st.append("Prorrateo\t\t30 días\t\t" + valorProrrateo + "\n");
+        st.append("Complemento\t\t30 días\t\t" + importeComplementoMes + "\n");
+        st.append("Antigüedad\t\t" + numeroTrienios + " trienios\t" + importeTrienios + "\n");
+        st.append("Contingencias generales\t" + seguridadSocialTrabajador + "% de " + baseEmpresario + "\t\t\t" + importeSeguridadSocialTrabajador + "\n");
+        st.append("Desempleo\t\t" + desempleoTrabajador + "% de " + baseEmpresario + "\t\t\t" + importeDesempleoTrabajador + "\n");
+        st.append("Cuota formación\t\t" + formacionTrabajador + "% de " + baseEmpresario + "\t\t\t" + importeFormacionTrabajador + "\n"); 
+        st.append("IRPF\t\t\t" + irpf + "% de " + baseEmpresario + "\t\t\t" + importeIrpf + "\n");
+        st.append("_______________________________________________________________________________\n");
+        st.append("Total deducciones\t\t\t\t\t" + (importeSeguridadSocialTrabajador+importeDesempleoTrabajador+importeFormacionTrabajador+importeIrpf) + "\n");
+        st.append("Total devengos\t\t\t\t" + (importeSalarioMes+valorProrrateo+importeComplementoMes+importeTrienios) + "\n");
+        st.append("_______________________________________________________________________________\n");
+        st.append("\t\t\tLíquido a percibir\t\t" + liquidoNomina + "\n\n");
+        st.append("_______________________________________________________________________________\n");
+        st.append("Cálculo empresario: BASE\t\t\t\t" + baseEmpresario + "\n");
+        st.append("_______________________________________________________________________________\n\n");
+        st.append("Contingencias comunes empresario " + seguridadSocialEmpresario + "%\t\t\t" + importeSeguridadSocialEmpresario + "\n");
+        st.append("Desempleo " + desempleoEmpresario + "%\t\t\t\t\t" + importeDesempleoEmpresario + "\n");
+        st.append("Formación " + formacionEmpresario + "%\t\t\t\t\t" + importeFormacionEmpresario + "\n");
+        st.append("Accidentes de trabajo " + accidentesTrabajoEmpresario + "%\t\t\t\t" + importeAccidentesTrabajoEmpresario + "\n");
+        st.append("FOGASA " + fogasaempresario + "%\t\t\t\t\t\t" + importeFogasaempresario + "\n");
+        st.append("_______________________________________________________________________________\n");
+        st.append("Total empresario\t\t\t\t\t" + (importeSeguridadSocialEmpresario+importeDesempleoEmpresario+importeDesempleoEmpresario+importeAccidentesTrabajoEmpresario+importeFogasaempresario) + "\n\n");
+        st.append("COSTE TOTAL TRABAJADOR:\t\t\t\t\t" + (liquidoNomina+importeSeguridadSocialEmpresario+importeDesempleoEmpresario+importeDesempleoEmpresario+importeAccidentesTrabajoEmpresario+importeFogasaempresario) + "\n");
+        
+        return st.toString();
+    }
 
 
 }
