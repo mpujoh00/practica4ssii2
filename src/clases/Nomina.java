@@ -42,12 +42,13 @@ public class Nomina  implements java.io.Serializable {
      private double liquidoNomina;
      private double costeTotalEmpresario;
      private boolean esExtra;
+     private boolean esNuevo;
 
     public Nomina(int idNomina) {
         this.idNomina = idNomina;
     }
 
-    public Nomina(int idNomina, Trabajadorbbdd trabajadorbbdd, int mes, int anio, int numeroTrienios, double importeTrienios, double importeSalarioMes, double importeComplementoMes, double valorProrrateo, double brutoAnual, double irpf, double importeIrpf, double baseEmpresario, double seguridadSocialEmpresario, double importeSeguridadSocialEmpresario, double desempleoEmpresario, double importeDesempleoEmpresario, double formacionEmpresario, double importeFormacionEmpresario, double accidentesTrabajoEmpresario, double importeAccidentesTrabajoEmpresario, double fogasaempresario, double importeFogasaempresario, double seguridadSocialTrabajador, double importeSeguridadSocialTrabajador, double desempleoTrabajador, double importeDesempleoTrabajador, double formacionTrabajador, double importeFormacionTrabajador, double brutoNomina, double liquidoNomina, double costeTotalEmpresario) {
+    public Nomina(int idNomina, Trabajadorbbdd trabajadorbbdd, int mes, int anio, int numeroTrienios, double importeTrienios, double importeSalarioMes, double importeComplementoMes, double valorProrrateo, double brutoAnual, double irpf, double importeIrpf, double baseEmpresario, double seguridadSocialEmpresario, double importeSeguridadSocialEmpresario, double desempleoEmpresario, double importeDesempleoEmpresario, double formacionEmpresario, double importeFormacionEmpresario, double accidentesTrabajoEmpresario, double importeAccidentesTrabajoEmpresario, double fogasaempresario, double importeFogasaempresario, double seguridadSocialTrabajador, double importeSeguridadSocialTrabajador, double desempleoTrabajador, double importeDesempleoTrabajador, double formacionTrabajador, double importeFormacionTrabajador, double brutoNomina, double liquidoNomina, double costeTotalEmpresario, boolean esNuevo) {
        this.idNomina = idNomina;
        this.trabajadorbbdd = trabajadorbbdd;
        this.mes = mes;
@@ -80,6 +81,7 @@ public class Nomina  implements java.io.Serializable {
        this.brutoNomina = brutoNomina;
        this.liquidoNomina = liquidoNomina;
        this.costeTotalEmpresario = costeTotalEmpresario;
+       this.esNuevo = esNuevo;
     }
    
     public int getIdNomina() {
@@ -313,6 +315,14 @@ public class Nomina  implements java.io.Serializable {
     
     public void setEsExtra(boolean esExtra){
         this.esExtra = esExtra;
+    }
+    
+    public boolean getEsNuevo(){
+        return this.esNuevo;
+    }
+    
+    public void setEsNuevo(boolean esNuevo){
+        this.esNuevo = esNuevo;
     }
     
     public String getMesNombre(){
