@@ -23,17 +23,14 @@ public class Emails {
     
     XSSFWorkbook excel;
     
-    public Emails(){
-        
+    public Emails(){        
         excel = Excel.getExcel();
     }
     
      public void email(){
         
-        XSSFSheet hoja = excel.getSheetAt(0);
-        
-        Row fila;
-        
+        XSSFSheet hoja = excel.getSheetAt(0);        
+        Row fila;        
         ArrayList<String> usuarios = new ArrayList<String>();
         ArrayList<String> empresas = new ArrayList<String>();
         
@@ -58,12 +55,10 @@ public class Emails {
                             email = generaEmail(celdaA1.getStringCellValue(), celdaA2.getStringCellValue(), celdaN.getStringCellValue(), celdaE.getStringCellValue(),usuarios,empresas);
                         }
                         else{
-                            email = generaEmail(celdaA1.getStringCellValue(),celdaN.getStringCellValue(),celdaE.getStringCellValue(),usuarios,empresas);
-                            
+                            email = generaEmail(celdaA1.getStringCellValue(),celdaN.getStringCellValue(),celdaE.getStringCellValue(),usuarios,empresas);                
                         }
                         
-                        if(celdaEmail == null) {
-                        	
+                        if(celdaEmail == null) {                        	
                         	celdaEmail = fila.createCell(8);
                         	celdaEmail.setCellValue(email);
                         }
@@ -76,26 +71,20 @@ public class Emails {
     public String generaEmail(String apellido1, String apellido2, String nombre, String empresa, ArrayList<String> usuarios, ArrayList<String> empresas){
         
         String[] surname1 = apellido1.split("");
-        String[] name = nombre.split("");
-        
+        String[] name = nombre.split("");        
         String usuario = null;
         
-        if(apellido2 != null){   
-            
-            String[] surname2 = apellido2.split("");
-            
+        if(apellido2 != null){               
+            String[] surname2 = apellido2.split("");            
             usuario = surname1[0].concat(surname2[0]).concat(name[0]);
         }
-        else{
-            
+        else{            
             usuario = surname1[0].concat(name[0]);
         }
                 
-        String num = repeticion(usuarios, empresas, usuario, empresa);
-        
+        String num = repeticion(usuarios, empresas, usuario, empresa);        
         usuarios.add(usuario);
-        empresas.add(empresa);
-        
+        empresas.add(empresa);        
         String email = usuario.concat(num).concat("@").concat(empresa).concat(".es");
         
         return email;
@@ -104,15 +93,11 @@ public class Emails {
     public String generaEmail(String apellido1, String nombre, String empresa, ArrayList<String> usuarios, ArrayList<String> empresas){
         
         String[] surname = apellido1.split("");
-        String[] name = nombre.split("");
-        
-        String usuario = surname[0].concat(name[0]);
-                
-        String num = repeticion(usuarios, empresas, usuario, empresa);
-        
+        String[] name = nombre.split("");        
+        String usuario = surname[0].concat(name[0]);                
+        String num = repeticion(usuarios, empresas, usuario, empresa);        
         usuarios.add(usuario);
-        empresas.add(empresa);
-        
+        empresas.add(empresa);        
         String email = usuario.concat(num).concat("@").concat(empresa).concat(".es");
         
         return email;
@@ -124,19 +109,16 @@ public class Emails {
         
         for(int i = 0; i < usuarios.size(); i++){
             
-            if(usuario.equals(usuarios.get(i)) && empresa.equals(empresas.get(i))){
-                
+            if(usuario.equals(usuarios.get(i)) && empresa.equals(empresas.get(i))){                
                 contador++;
             }
         }
         
         String num = Integer.toString(contador);
         
-        if(contador < 10){
-            
+        if(contador < 10){            
             num = "0".concat(num);  
         }
-        
         return num;
     }
     

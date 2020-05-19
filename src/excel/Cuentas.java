@@ -22,8 +22,7 @@ public class Cuentas {
     
     XSSFWorkbook excel;
     
-    public Cuentas(){
-        
+    public Cuentas(){        
         excel = Excel.getExcel();
     }
     
@@ -32,15 +31,12 @@ public class Cuentas {
     public ArrayList<ArrayList<String>> corrigeDigitosDeControl(){
         
         XSSFSheet hoja = excel.getSheetAt(0);
-        
-        Row fila;
-        
+        Row fila;        
         ArrayList<ArrayList<String>> cccErroneos = new ArrayList<ArrayList<String>>();
         
         for(int i = 1; i <= hoja.getLastRowNum(); i++){
             
-            fila = hoja.getRow(i);
-            
+            fila = hoja.getRow(i);            
             Cell celda = fila.getCell(9); //selecciona la casilla correspondiente al CCC
 
             if(celda != null && celda.getCellType() != CellType.BLANK && StringUtils.isNotBlank(celda.toString()) && !filaVacia(fila)){
@@ -49,15 +45,13 @@ public class Cuentas {
                 
                 if(res != "inc" && res != null){ //modifica los dígitos de control erróneos
                                     	
-                	cccErroneos.add(new ArrayList<>());
-                	cccErroneos.get(cccErroneos.size()-1).add(Integer.toString(i));
-                	cccErroneos.get(cccErroneos.size()-1).add(celda.getStringCellValue());
-                	
+                    cccErroneos.add(new ArrayList<>());
+                    cccErroneos.get(cccErroneos.size()-1).add(Integer.toString(i));
+                    cccErroneos.get(cccErroneos.size()-1).add(celda.getStringCellValue());                	
                     celda.setCellValue(res);
                 }
             }
-        }
-        
+        }        
         return cccErroneos;
     }
     
@@ -70,14 +64,11 @@ public class Cuentas {
         if(ccc.length() != 20){
             res = "inc";
         }
-        else{
-            
+        else{            
             String primerasPosiciones = ccc.substring(0,8);
             String cadena1 = "00".concat(primerasPosiciones);
             String cadena2 = ccc.substring(10,20);
-
-            int[] factores = {1, 2, 4, 8, 5, 10, 9, 7, 3, 6};
-            
+            int[] factores = {1, 2, 4, 8, 5, 10, 9, 7, 3, 6};            
             int productos1 = Integer.parseInt(cadena1.substring(0,1)) * factores[0];
             int productos2 = Integer.parseInt(cadena2.substring(0,1)) * factores[0];
 
@@ -88,8 +79,7 @@ public class Cuentas {
             }
             
             int resto1 = productos1%11;
-            int resto2 = productos2%11;
-            
+            int resto2 = productos2%11;            
             primerDigito = Integer.toString(11-resto1);
             segundoDigito = Integer.toString(11-resto2);
             
@@ -119,14 +109,12 @@ public class Cuentas {
     
     public void iban(){
         
-        XSSFSheet hoja = excel.getSheetAt(0);
-        
+        XSSFSheet hoja = excel.getSheetAt(0);        
         Row fila;
         
         for(int i = 1; i <= hoja.getLastRowNum(); i++){
             
-            fila = hoja.getRow(i);
-            
+            fila = hoja.getRow(i);            
             Cell celdaCCC = fila.getCell(9); //selecciona la casilla correspondiente al CCC
             Cell celdaPais = fila.getCell(10); //selecciona la casilla correspondiente al pais
             Cell celdaIban = fila.getCell(11); //selecciona la casilla correspondiente a la columna L en la que se añadirá el IBAN
@@ -138,8 +126,7 @@ public class Cuentas {
 
                     if(celdaIban == null) {
                     	celdaIban = fila.createCell(11);
-                    }
-                    
+                    }                    
                     celdaIban.setCellValue(iban);                    
                 }
             }
@@ -148,30 +135,22 @@ public class Cuentas {
     
     public String calculaIban(String ccc, String pais){
 
-        String codigo = pais.concat("00").concat(ccc);
-        
-        codigo = ccc.concat(pais).concat("00");
-        
-        String[] letras = pais.split("");
-        
+        String codigo = pais.concat("00").concat(ccc);        
+        codigo = ccc.concat(pais).concat("00");        
+        String[] letras = pais.split("");        
         String codigoletras = transformarNumero(letras[0]).concat(transformarNumero(letras[1]));
-        
         codigo = ccc.concat(codigoletras).concat("00");
                 
         java.math.BigInteger codigoCompleto = new java.math.BigInteger(codigo);
-        java.math.BigInteger num = new java.math.BigInteger("97");
-        
-        java.math.BigInteger resto = codigoCompleto.mod(num);
-                
+        java.math.BigInteger num = new java.math.BigInteger("97");       
+        java.math.BigInteger resto = codigoCompleto.mod(num);                
         java.math.BigInteger num1 = new java.math.BigInteger("98");
-        java.math.BigInteger diferencia = num1.subtract(resto);
-        
+        java.math.BigInteger diferencia = num1.subtract(resto);        
         String digitos = diferencia.toString();
         
         if(digitos.length() != 2){
             digitos = "0".concat(digitos);
-        }
-        
+        }        
         String iban = pais.concat(digitos).concat(ccc);
         
         return iban;

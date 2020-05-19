@@ -5,14 +5,14 @@
  */
 package main;
 
+import clases.Nomina;
 import excel.Excel;
 import excel.Cuentas;
 import excel.Emails;
 import excel.Nifs;
 import excel.Nominas;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Scanner;
 
 import xml.Xml;
@@ -36,24 +36,24 @@ public class Main {
         Emails email = new Emails();
         email.email();
         
-        Scanner sc = new Scanner(System.in);
-       
+        Scanner sc = new Scanner(System.in);       
     	System.out.println("Introduzca el mes y el año del que desea generar las nóminas:");
-    	String fecha = sc.nextLine();
-    	
+    	String fecha = sc.nextLine();    	
     	String f[] = fecha.split("/");
     	int mes = Integer.parseInt(f[0]);
     	int anyo = Integer.parseInt(f[1]);
     	
         Nominas noms = new Nominas();
-        noms.generaNominas(mes, anyo);
+        List<Nomina> nominas = noms.generaNominas(mes, anyo);
+        for(Nomina n: nominas){
+            System.out.println(n.toString());
+        }
+                   
+        Xml xml = new Xml();
+        xml.creaFicheroErrores();
+        xml.creaFicheroErroresCCC(cuentasErrores);    
         
         Excel.close();
-    
-        /*Xml xml = new Xml();
-        xml.creaFicheroErrores();
-        xml.creaFicheroErroresCCC(cuentasErrores);*/
-    	
     }
     
 }

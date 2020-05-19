@@ -21,6 +21,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import clases.Categorias;
+import clases.Empresas;
 
 /**
  *
@@ -65,19 +66,15 @@ public class Excel {
     
      public static List<Categorias> getCategorias(){ //hoja 2
         
-        XSSFSheet hoja = excel.getSheetAt(1);
-        
-        Row fila;
-        
+        XSSFSheet hoja = excel.getSheetAt(1);        
+        Row fila;        
         List<Categorias> categorias = new ArrayList<>(hoja.getLastRowNum()-1);
         
         for(int i = 1; i <= hoja.getLastRowNum(); i++){
             
-            fila = hoja.getRow(i);
-            
+            fila = hoja.getRow(i);            
             Categorias cat = new Categorias(i, fila.getCell(0).toString(), Double.parseDouble(fila.getCell(1).toString()),
-            		Double.parseDouble(fila.getCell(2).toString()));
-            
+            		Double.parseDouble(fila.getCell(2).toString()));            
             categorias.add(cat);
         } 
         
@@ -85,7 +82,9 @@ public class Excel {
     }
 
     public static Categorias getCategoriaPorNombre(String nombreCategoria){
+        
         List<Categorias> categorias = getCategorias();
+        
         for(Categorias cat : categorias){
             if(cat.getNombreCategoria().equals(nombreCategoria)){
                 return cat;
@@ -96,77 +95,102 @@ public class Excel {
     
     public static Map<Integer, Double> getRetenciones(){ //hoja 3
         
-        XSSFSheet hoja = excel.getSheetAt(2);
-        
+        XSSFSheet hoja = excel.getSheetAt(2);        
         Row fila;
-        
-        //definir un HashMap
         Map<Integer, Double> retenciones = new HashMap<>();
                 
         for(int i = 1; i <= hoja.getLastRowNum(); i++){
             
             fila = hoja.getRow(i);
-            
-            //insertar valores "key"-"value" al HashMap
             retenciones.put((int) fila.getCell(0).getNumericCellValue(), fila.getCell(1).getNumericCellValue());
-        }
-        
-        return retenciones;
-        
+        }        
+        return retenciones;        
     }
 
     public static double getRetencion(double salario){
+        
         Map<Integer, Double> retenciones = getRetenciones();
         int salarioRedondeado = (int) Math.ceil(salario / 1000) * 1000;
         double valorObtenido = retenciones.getOrDefault(salarioRedondeado, 0.0);
+        
         if(valorObtenido == 0){
             if(salario > 60000){
                 valorObtenido = retenciones.getOrDefault(60000, -1.0);
             }else if(salario < 12000){
                 valorObtenido = retenciones.getOrDefault(12000, -1.0);
             }
-        }
-        
+        }        
         return valorObtenido;
     }
     
     public static Map<String, Double> getValores(){ //hoja 4
         
-        XSSFSheet hoja = excel.getSheetAt(3);
-        
+        XSSFSheet hoja = excel.getSheetAt(3);        
         Row fila;
-        
-        //definir un HashMap
         Map<String, Double> valores = new HashMap<>();
                 
         for(int i = 0; i <= hoja.getLastRowNum(); i++){
             
             fila = hoja.getRow(i);
-            
-            //insertar valores "key"-"value" al HashMap
             valores.put(fila.getCell(0).toString(), Double.parseDouble(fila.getCell(1).toString()));
-        }
-        
+        }        
         return valores;
     }
     
     public static Map<Integer, Integer> getTrienios(){ //hoja 5
         
-        XSSFSheet hoja = excel.getSheetAt(4);
-        
-        Row fila;
-        
-        //definir un HashMap
+        XSSFSheet hoja = excel.getSheetAt(4);        
+        Row fila;        
         Map<Integer, Integer> trienios = new HashMap<>();
+        
         for(int i = 1; i <= hoja.getLastRowNum(); i++){
             
-            fila = hoja.getRow(i);
-            
-            //insertar valores "key"-"value" al HashMap
+            fila = hoja.getRow(i);            
             trienios.put((int) fila.getCell(0).getNumericCellValue(), (int) fila.getCell(1).getNumericCellValue());
-        }
-        
+        }        
         return trienios;
+    }
+    
+    public static List<Empresas> getEmpresas(){
+        
+        XSSFSheet hoja = excel.getSheetAt(0);
+        Row fila;        
+        List<Empresas> empresas = new ArrayList<>();
+        int cont = 1;
+        
+        for(int i=1; i <= hoja.getLastRowNum(); i++){            
+            fila = hoja.getRow(i);
+                        
+            if(!filaVacia(fila)){                
+                String cifEmpresa = fila.getCell(0).getStringCellValue();
+                String nombreEmpresa = fila.getCell(1).getStringCellValue();
+                boolean noEnLista = true;
+
+                for(Empresas emp: empresas){
+                    if(emp.getCif().equals(cifEmpresa))
+                        noEnLista = false;
+                }
+                
+                if(noEnLista){
+                    Empresas emp = new Empresas(cont, nombreEmpresa, cifEmpresa);
+                    empresas.add(emp);
+                    cont++;
+                }                
+            }
+        }        
+        return empresas;
+    }
+    
+    public static Empresas getEmpresaPorCIF(String CIF){
+        
+        List<Empresas> empresas = getEmpresas();
+        
+        for(Empresas emp : empresas){
+            if(emp.getCif().equals(CIF)){
+                return emp;
+            }
+        }
+        return null;        
     }
     
     public static void close(){

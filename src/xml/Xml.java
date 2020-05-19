@@ -37,8 +37,7 @@ public class Xml {
     XSSFWorkbook excel;
     XSSFSheet hoja;
     
-    public Xml() {
-        
+    public Xml() {        
         excel = Excel.getExcel();        
     }
     
@@ -48,22 +47,19 @@ public class Xml {
             ArrayList<ArrayList<String>> trabajadores = new ArrayList<ArrayList<String>>(); // un arraylist para cada trabajador
         
             // coge la hoja de trabajadores
-            hoja = excel.getSheetAt(0);
-            
+            hoja = excel.getSheetAt(0);            
             ArrayList<ArrayList<String>> nifs = new ArrayList<ArrayList<String>>(); // mejor que un string (no sabemos la longitud)
             
             //Busca las celdas en blanco 
-            for(int i = 1; i < hoja.getLastRowNum(); i++){ // empieza en la 2a fila
+            for(int i = 1; i <= hoja.getLastRowNum(); i++){ // empieza en la 2a fila
                 
                 Row fila = hoja.getRow(i);
                 Cell celda = fila.getCell(7); // selecciona la casilla correspondiente al NIF/NIE
                                 
                 if((celda == null || celda.getCellType() == CellType.BLANK || StringUtils.isBlank(celda.toString())) && !filaVacia(fila)){
      
-                    trabajadores.add(new ArrayList<String>());
-                    
-                    trabajadores.get(trabajadores.size()-1).add(Integer.toString(i+1));
-                    
+                    trabajadores.add(new ArrayList<String>());                    
+                    trabajadores.get(trabajadores.size()-1).add(Integer.toString(i+1));                    
                     Cell aux = fila.getCell(4); // Nombre
                     
                     if(aux != null){
@@ -119,21 +115,18 @@ public class Xml {
             }
             
             //Busca duplicados
-            for(int i = 0; i < nifs.size()-1; i++) {
-                for(int j = 0; j < nifs.size()-1; j++){
+            for(int i = 0; i <= nifs.size()-1; i++) {
+                for(int j = 0; j <= nifs.size()-1; j++){
                     
                     if(i != j && nifs.get(i).get(0).equals(nifs.get(j).get(0)) && nifs.get(i).get(2).equals("duplicado") && nifs.get(j).get(2).equals("")){
                         
                         nifs.get(j).set(2, "duplicado");
                         
-                    }else if(i != j && nifs.get(i).get(0).equals(nifs.get(j).get(0)) && nifs.get(i).get(2).equals("") && nifs.get(j).get(2).equals("")){ //  && !blanco
+                    }else if(i != j && nifs.get(i).get(0).equals(nifs.get(j).get(0)) && nifs.get(i).get(2).equals("") && nifs.get(j).get(2).equals("")){
                                                 
-                        Row fila = hoja.getRow(Integer.parseInt(nifs.get(i).get(1))-1);
-                        
+                        Row fila = hoja.getRow(Integer.parseInt(nifs.get(i).get(1))-1);                        
                         trabajadores.add(new ArrayList<String>());
-
                         trabajadores.get(trabajadores.size()-1).add(nifs.get(i).get(1));
-
                         Cell aux = fila.getCell(4); // Nombre
 
                         if(aux != null){

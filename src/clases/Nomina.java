@@ -1,6 +1,10 @@
 package clases;
 // Generated 09-mar-2020 21:19:23 by Hibernate Tools 4.3.1
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
+
 
 
 /**
@@ -352,15 +356,26 @@ public class Nomina  implements java.io.Serializable {
         retenciones = (double) Math.round((importeSeguridadSocialTrabajador+importeDesempleoTrabajador+importeFormacionTrabajador+importeIrpf)*100)/100;
         totalEmpresario = (double) Math.round((importeSeguridadSocialEmpresario+importeDesempleoEmpresario+importeFormacionEmpresario+importeAccidentesTrabajoEmpresario+importeFogasaempresario)*100)/100;
         costeTrabajador = (double) Math.round((importe+totalEmpresario)*100)/100;
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        String fechaAlta = df.format(trabajadorbbdd.getFechaAlta());
         
         StringBuffer st = new StringBuffer();
         
+        st.append("-------------------------------------------------------------------------------\n");
+        st.append("-------------------------------------------------------------------------------\n");
+        st.append(trabajadorbbdd.getEmpresas().getNombre() + "\nCIF: " + trabajadorbbdd.getEmpresas().getCif() + "\n");
+        st.append("-------------------------------------------------------------------------------\n");
+        st.append("IBAN: " + trabajadorbbdd.getIban() + "\nBruto anual: " + brutoAnual + "\nCategoría: " + trabajadorbbdd.getCategorias().getNombreCategoria() + "\nFecha de alta: " + fechaAlta + "\n");
+        st.append("-------------------------------------------------------------------------------\n");
+        st.append(trabajadorbbdd.getNombreCompleto() + "\nDNI: " + trabajadorbbdd.getNifnie() + "\n\n");
+        
         if(esExtra){
-            st.append("Nómina: Extra de " + getMesNombre().toLowerCase() + " de " + anio + "\n\n");
+            st.append("\t\t\tNómina: Extra de " + getMesNombre().toLowerCase() + " de " + anio + "\n\n");
         }
         else{
-            st.append("Nómina: " + getMesNombre() + " de " + anio + "\n\n");
+            st.append("\t\t\tNómina: " + getMesNombre() + " de " + anio + "\n\n");
         }        
+        
         st.append("_______________________________________________________________________________\n");
         st.append("Conceptos\t\tCantidad\tDevengo\t\tDeducción\n");
         st.append("_______________________________________________________________________________\n");

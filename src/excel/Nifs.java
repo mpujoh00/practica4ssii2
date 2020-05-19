@@ -21,31 +21,26 @@ public class Nifs {
     
     XSSFWorkbook excel;
     
-    public Nifs(){
-        
+    public Nifs(){        
         excel = Excel.getExcel();        
     }
     
     public void corrigeNifs(){
         
-        XSSFSheet hoja = excel.getSheetAt(0);
-        
+        XSSFSheet hoja = excel.getSheetAt(0);        
         Row fila;
-                
+        
         for(int i = 1; i <= hoja.getLastRowNum(); i++){
             
-            fila = hoja.getRow(i);
-            
+            fila = hoja.getRow(i);            
             Cell celda = fila.getCell(7); // selecciona la casilla correspondiente al NIF/NIE
                                 
             if(celda != null && celda.getCellType() != CellType.BLANK && StringUtils.isNotBlank(celda.toString()) && !filaVacia(fila)){
                 
                 String res = validaLetra(celda.getStringCellValue());
                 
-                if(res != "inc" && res != null){ // modifica los nif/nie erróneos
-                    
-                    celda.setCellValue(celda.getStringCellValue().substring(0,8).concat(res));
-                    
+                if(res != "inc" && res != null){ // modifica los nif/nie erróneos                    
+                    celda.setCellValue(celda.getStringCellValue().substring(0,8).concat(res));                    
                 }
             }
         }
@@ -76,8 +71,7 @@ public class Nifs {
                 nif = n.concat(nif.substring(1));
             }
             
-            String numNif = nif.substring(0,8);
-            
+            String numNif = nif.substring(0,8);            
             int num = Integer.parseInt(numNif);
             int resto = num%23;
             
@@ -156,8 +150,7 @@ public class Nifs {
             if(!nif.substring(8).equals(letra)){
                 res = letra;
             }
-        }
-        
+        }        
         return res;
     }
 }

@@ -24,10 +24,10 @@ public class Trabajadorbbdd  implements java.io.Serializable {
      private String codigoCuenta;
      private String iban;
      private Set nominas = new HashSet(0);
+     private boolean prorrateo;
 
     public Trabajadorbbdd() {
     }
-
 	
     public Trabajadorbbdd(int idTrabajador, Categorias categorias, Empresas empresas, String nombre, String apellido1) {
         this.idTrabajador = idTrabajador;
@@ -35,6 +35,20 @@ public class Trabajadorbbdd  implements java.io.Serializable {
         this.empresas = empresas;
         this.nombre = nombre;
         this.apellido1 = apellido1;
+    }
+    public Trabajadorbbdd(int idTrabajador, Categorias categorias, Empresas empresas, String nombre, String apellido1, String apellido2, String nifnie, String email, Date fechaAlta, String codigoCuenta, String iban, boolean prorrateo) {
+       this.idTrabajador = idTrabajador;
+       this.categorias = categorias;
+       this.empresas = empresas;
+       this.nombre = nombre;
+       this.apellido1 = apellido1;
+       this.apellido2 = apellido2;
+       this.nifnie = nifnie;
+       this.email = email;
+       this.fechaAlta = fechaAlta;
+       this.codigoCuenta = codigoCuenta;
+       this.iban = iban;
+       this.prorrateo = prorrateo;
     }
     public Trabajadorbbdd(int idTrabajador, Categorias categorias, Empresas empresas, String nombre, String apellido1, String apellido2, String nifnie, String email, Date fechaAlta, String codigoCuenta, String iban, Set nominas) {
        this.idTrabajador = idTrabajador;
@@ -136,9 +150,28 @@ public class Trabajadorbbdd  implements java.io.Serializable {
         this.nominas = nominas;
     }
 
+    public void setProrrateo(boolean prorrateo){
+        this.prorrateo = prorrateo;
+    }
 
-
-
+    public boolean getProrrateo(){
+        return this.prorrateo;
+    }
+    
+    public String getNombreCompleto(){
+        
+        String apellidos = "";
+        
+        if(apellido1 == "" && apellido2 != "")
+            apellidos = apellido2;
+        else if(apellido1 != "" && apellido2 == "")
+            apellidos = apellido1;
+        else if(apellido1 != "" && apellido2 != "")
+            apellidos = apellido1 + " " + apellido2;
+        
+        return nombre + " " + apellidos;
+    }
+    
 }
 
 

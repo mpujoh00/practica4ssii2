@@ -2,17 +2,11 @@ package excel;
 
 import clases.Categorias;
 import clases.Nomina;
-import static excel.Excel.filaVacia;
+import clases.Trabajadorbbdd;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Nominas {
@@ -29,69 +23,50 @@ public class Nominas {
         categorias = Excel.getCategorias();
     }
     
-    public void generaNominas(int mes, int anyo){
+    public List<Nomina> generaNominas(int mes, int anyo){
 
         nominas = new ArrayList<>();
-        XSSFSheet hoja = excel.getSheetAt(0); // hoja de trabajadores
-        Row fila;
+        Trabajadores t = new Trabajadores();
+        List<Trabajadorbbdd> trabajadores = t.getTrabajadores();
         contNominas = 1;
                 
-        for(int i = 1; i <= hoja.getLastRowNum(); i++){ // genera la nómina de cada trabajador
-            
-            fila = hoja.getRow(i);
-            Cell celda = fila.getCell(7);
-                                
-            if(celda != null && celda.getCellType() != CellType.BLANK && StringUtils.isNotBlank(celda.toString()) && !filaVacia(fila)){
-                try {
-                    nomina = new Nomina(contNominas);
-                    if(generaNominaTrabajador(mes, anyo, fila)){
-                        nominas.add(nomina);
-                        contNominas++;
-                    }
-                } catch (ParseException e) {
-                    e.printStackTrace();
+        for(Trabajadorbbdd trabajador: trabajadores){
+            try{
+                nomina = new Nomina(contNominas);
+                if(generaNominaTrabajador(mes, anyo, trabajador)){
+                    nominas.add(nomina);
+                    contNominas++;
                 }
+            }catch(ParseException e){
+                e.printStackTrace();
             }
-            
-            System.out.println("--------------------------------------------------------------------------------");
         }
+        
+        return nominas;
     }
 
     
-    private boolean generaNominaTrabajador(int mes, int anyo, Row trabajador) throws ParseException {
+    private boolean generaNominaTrabajador(int mes, int anyo, Trabajadorbbdd trabajador) throws ParseException {
         
         // comprueba si se ha de generar la nómina
-        Date fechaAltaTrabajador = trabajador.getCell(3).getDateCellValue();
+        Date fechaAltaTrabajador = trabajador.getFechaAlta();
         Calendar fechaAltaCalendar = Calendar.getInstance();
         fechaAltaCalendar.setTime(fechaAltaTrabajador);
-
         Calendar fechaNominaCalendar = new GregorianCalendar(anyo, mes-1, 2);
         
         if(fechaAltaCalendar.after(fechaNominaCalendar)){ // aún no estaba en la empresa
-            System.out.println("El trabajador aun no estaba en la empresa: Alta en " + fechaAltaCalendar.get(Calendar.MONTH) + "/" + fechaAltaCalendar.get(Calendar.YEAR));
             return false;
         }
         
         nomina.setMes(mes);
         nomina.setAnio(anyo);
-
-        // imprime datos
-        //System.out.println("EMPRESA\n" + trabajador.getCell(1).getStringCellValue() + "  CIF: " + trabajador.getCell(0).getStringCellValue());
-        String apellidos = "";
-        if(trabajador.getCell(6) != null){
-            apellidos = trabajador.getCell(5).getStringCellValue() + " " + trabajador.getCell(6).getStringCellValue();
-        } else{
-            apellidos = trabajador.getCell(5).getStringCellValue();
-        }
-        System.out.println("\n" + trabajador.getCell(4).getStringCellValue() + " " + apellidos);
-        
-        if(trabajador.getCell(4).getStringCellValue().equals("Rocío")){
-            System.out.println("jeje it's me bitch");
-        }
-        
+        nomina.setTrabajadorbbdd(trabajador);
+                
         // calcula la antigüedad del trabajador (trienios)
         boolean cambioTrienio = hayCambioDeTrienio(fechaAltaCalendar, fechaNominaCalendar);
-        int trienios = getTrienios(fechaAltaCalendar, fechaNominaCalendar, cambioTrienio);
+        int trienios = getTrienios(fechaAltaCalendar, fechaNominaCalendar);
+        
+        // comprueba si ha entrado ese mismo año
         boolean nuevo = esEmpleadoNuevo(fechaAltaCalendar, fechaNominaCalendar);
         int meses = 0;
         if(nuevo){
@@ -100,19 +75,11 @@ public class Nominas {
         nomina.setEsNuevo(nuevo);
         
         // obtengo la categoría del trabajador
-        String nombreCat = trabajador.getCell(2).getStringCellValue();
-        Categorias categoria = Excel.getCategoriaPorNombre(nombreCat);
-        System.out.println("-Categoría: " + categoria.getNombreCategoria() + "\n");
+        Categorias categoria = trabajador.getCategorias();
         
         // comprueba el prorrateo
-        String prorrateoString = trabajador.getCell(12).getStringCellValue();
-        boolean prorrateo = false;
-        if(prorrateoString.equals("SI")){
-            prorrateo = true;
-        } else if(prorrateoString.equals("NO")){
-            prorrateo = false;
-        }
-        
+        boolean prorrateo = trabajador.getProrrateo();
+                        
         // calcula la nómina
         nomina.setEsExtra(false);
         calcularNomina(prorrateo, categoria, trienios, false, cambioTrienio, fechaAltaCalendar, fechaNominaCalendar, nuevo, meses);
@@ -120,11 +87,11 @@ public class Nominas {
         // calcula la extra, si corresponde
         boolean esPagaExtra = !prorrateo && (fechaNominaCalendar.get(Calendar.MONTH) == Calendar.JUNE || fechaNominaCalendar.get(Calendar.MONTH) == Calendar.DECEMBER);
         if(esPagaExtra){
-            System.out.println(nomina.toString()); // imprime la nomina normal
             nominas.add(nomina);
             nomina = new Nomina(++contNominas);
             nomina.setMes(mes);
             nomina.setAnio(anyo);
+            nomina.setTrabajadorbbdd(trabajador);
             nomina.setEsExtra(true);
             if(fechaNominaCalendar.get(Calendar.MONTH) == Calendar.JUNE){
                 if(fechaAltaCalendar.get(Calendar.MONTH) < Calendar.JUNE){
@@ -133,13 +100,12 @@ public class Nominas {
             }
             calcularNomina(prorrateo, categoria, trienios, true, cambioTrienio, fechaAltaCalendar, fechaNominaCalendar, nuevo, meses);
         }
-        
-        System.out.println(nomina.toString());
-        
+                
         return true;
     }
 
     private double calcularNomina(boolean prorrateo, Categorias categoria, int trienios, boolean esExtra, boolean cambioTrienio, Calendar fechaAltaCalendar, Calendar fechaNominaCalendar, boolean esNuevo, int meses){
+        
         // importes
         double dineroMensualPorTrieniosAnt = Excel.getTrienios().getOrDefault(trienios-1, 0);
         double dineroMensualPorTrieniosNuevo = Excel.getTrienios().getOrDefault(trienios, 0);
@@ -207,6 +173,7 @@ public class Nominas {
     }
 
     private double getRetenciones(double calculoBase, double brutoMensual, double brutoAnual, boolean pagaExtra, boolean esNuevo){
+        
         Map<String, Double> valorRetenciones = Excel.getValores();
         double porcentajeSSocial = valorRetenciones.get("Cuota obrera general TRABAJADOR");
         double porcentajeDesempleo = valorRetenciones.get("Cuota desempleo TRABAJADOR");
@@ -234,6 +201,7 @@ public class Nominas {
     }
 
     private double getRetencionesEmpresario(double calculoBase, boolean pagaExtra){
+       
         Map<String, Double> valorRetenciones = Excel.getValores();
         double porcentajeSSocial = valorRetenciones.get("Contingencias comunes EMPRESARIO");
         double porcentajeDesempleo = valorRetenciones.get("Desempleo EMPRESARIO");
@@ -265,6 +233,7 @@ public class Nominas {
     }
     
     private boolean esEmpleadoNuevo(Calendar fechaAltaCalendar, Calendar fechaNominaCalendar){
+        
         if(fechaAltaCalendar.get(Calendar.YEAR) == fechaNominaCalendar.get(Calendar.YEAR) || fechaAltaCalendar.get(Calendar.YEAR) == fechaNominaCalendar.get(Calendar.YEAR -1) && fechaAltaCalendar.get(Calendar.MONTH) > fechaNominaCalendar.get(Calendar.MONTH)){
             return true;
         }else{
@@ -273,6 +242,7 @@ public class Nominas {
     }
     
     private int getMesesTrabajando(Calendar fechaAltaCalendar, Calendar fechaNominaCalendar){
+        
         int meses = 0;
         if(fechaAltaCalendar.get(Calendar.YEAR) == fechaNominaCalendar.get(Calendar.YEAR)){
             meses = fechaNominaCalendar.get(Calendar.MONTH) - fechaAltaCalendar.get(Calendar.MONTH) +1;
@@ -285,7 +255,7 @@ public class Nominas {
     private boolean hayCambioDeTrienio(Calendar fechaAltaCalendar, Calendar fechaNominaCalendar){
         
         int cambioTrienio = (fechaNominaCalendar.get(Calendar.YEAR) - fechaAltaCalendar.get(Calendar.YEAR)) % 3;
-        if(cambioTrienio == 0){
+        if(cambioTrienio == 0 && fechaAltaCalendar.get(Calendar.MONTH) != Calendar.DECEMBER){
             return true;
         }else{
             return false;
@@ -295,26 +265,26 @@ public class Nominas {
     private boolean hayCambioDeTrienioAnyoSig(Calendar fechaAltaCalendar, Calendar fechaNominaCalendar){
         
         int cambioTrienio = (fechaNominaCalendar.get(Calendar.YEAR) - fechaAltaCalendar.get(Calendar.YEAR)) % 3;
-        if(cambioTrienio == 2 && fechaNominaCalendar.get(Calendar.MONTH) == Calendar.DECEMBER){
+        if(cambioTrienio == 2 && fechaNominaCalendar.get(Calendar.MONTH) == Calendar.DECEMBER && fechaAltaCalendar.get(Calendar.MONTH) < Calendar.JUNE){
             return true;
         }else{
             return false;
         }
     }
     
-    private int getTrienios(Calendar fechaAltaCalendar, Calendar fechaNominaCalendar, boolean cambioTrienio){ // revisar // diciembre año anterior
+    private int getTrienios(Calendar fechaAltaCalendar, Calendar fechaNominaCalendar){
         
-        int diffInYears = fechaNominaCalendar.get(Calendar.YEAR) - fechaAltaCalendar.get(Calendar.YEAR); 
-        /*if (fechaAltaCalendar.get(Calendar.MONTH) > fechaNominaCalendar.get(Calendar.MONTH) && !cambioTrienio) {
+        int diffInYears = fechaNominaCalendar.get(Calendar.YEAR) - fechaAltaCalendar.get(Calendar.YEAR);
+        if(diffInYears%3 == 0 && fechaNominaCalendar.get(Calendar.MONTH) == Calendar.DECEMBER && fechaAltaCalendar.get(Calendar.MONTH) == Calendar.DECEMBER){
             diffInYears--;
-        }*/
+        }        
         return diffInYears/3;
     }
     
     private int getTrieniosMes(Calendar fechaAltaCalendar, Calendar fechaNominaCalendar){
         
         int diffInYears = fechaNominaCalendar.get(Calendar.YEAR) - fechaAltaCalendar.get(Calendar.YEAR); 
-        if (fechaAltaCalendar.get(Calendar.MONTH) > fechaNominaCalendar.get(Calendar.MONTH)) {
+        if ((fechaAltaCalendar.get(Calendar.MONTH) > fechaNominaCalendar.get(Calendar.MONTH)) || (diffInYears%3 == 0 && fechaNominaCalendar.get(Calendar.MONTH) == Calendar.DECEMBER && fechaAltaCalendar.get(Calendar.MONTH) == Calendar.DECEMBER)) {
             diffInYears--;
         }
         return diffInYears/3;
