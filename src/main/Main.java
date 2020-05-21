@@ -11,6 +11,7 @@ import excel.Cuentas;
 import excel.Emails;
 import excel.Nifs;
 import excel.Nominas;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -26,7 +27,7 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {    
+    public static void main(String[] args) throws FileNotFoundException {    
         
         Nifs nif = new Nifs();
         nif.corrigeNifs();

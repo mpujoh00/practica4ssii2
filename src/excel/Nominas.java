@@ -3,11 +3,14 @@ package excel;
 import clases.Categorias;
 import clases.Nomina;
 import clases.Trabajadorbbdd;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import java.text.ParseException;
 import java.util.*;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import pdf.Pdf;
 
 public class Nominas {
 
@@ -23,7 +26,7 @@ public class Nominas {
         categorias = Excel.getCategorias();
     }
     
-    public List<Nomina> generaNominas(int mes, int anyo){
+    public List<Nomina> generaNominas(int mes, int anyo) throws FileNotFoundException, IOException{
 
         nominas = new ArrayList<>();
         Trabajadores t = new Trabajadores();
@@ -35,6 +38,7 @@ public class Nominas {
                 nomina = new Nomina(contNominas);
                 if(generaNominaTrabajador(mes, anyo, trabajador)){
                     nominas.add(nomina);
+                    Pdf.generarPDF(nomina, trabajador);
                     contNominas++;
                 }
             }catch(ParseException e){
@@ -46,7 +50,7 @@ public class Nominas {
     }
 
     
-    private boolean generaNominaTrabajador(int mes, int anyo, Trabajadorbbdd trabajador) throws ParseException {
+    private boolean generaNominaTrabajador(int mes, int anyo, Trabajadorbbdd trabajador) throws ParseException, FileNotFoundException, IOException {
         
         // comprueba si se ha de generar la nómina
         Date fechaAltaTrabajador = trabajador.getFechaAlta();
@@ -88,6 +92,7 @@ public class Nominas {
         boolean esPagaExtra = !prorrateo && (fechaNominaCalendar.get(Calendar.MONTH) == Calendar.JUNE || fechaNominaCalendar.get(Calendar.MONTH) == Calendar.DECEMBER);
         if(esPagaExtra){
             nominas.add(nomina);
+            Pdf.generarPDF(nomina, trabajador);
             nomina = new Nomina(++contNominas);
             nomina.setMes(mes);
             nomina.setAnio(anyo);
