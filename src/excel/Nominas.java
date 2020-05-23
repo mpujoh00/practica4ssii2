@@ -38,7 +38,7 @@ public class Nominas {
                 nomina = new Nomina(contNominas);
                 if(generaNominaTrabajador(mes, anyo, trabajador)){
                     nominas.add(nomina);
-                    Pdf.generarPDF(nomina, trabajador);
+                    Pdf.generarPDF(nomina);
                     contNominas++;
                 }
             }catch(ParseException e){
@@ -92,7 +92,7 @@ public class Nominas {
         boolean esPagaExtra = !prorrateo && (fechaNominaCalendar.get(Calendar.MONTH) == Calendar.JUNE || fechaNominaCalendar.get(Calendar.MONTH) == Calendar.DECEMBER);
         if(esPagaExtra){
             nominas.add(nomina);
-            Pdf.generarPDF(nomina, trabajador);
+            Pdf.generarPDF(nomina);
             nomina = new Nomina(++contNominas);
             nomina.setMes(mes);
             nomina.setAnio(anyo);

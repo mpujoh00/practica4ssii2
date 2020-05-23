@@ -12,6 +12,7 @@ import excel.Emails;
 import excel.Nifs;
 import excel.Nominas;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -27,7 +28,7 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws FileNotFoundException {    
+    public static void main(String[] args) throws FileNotFoundException, IOException {    
         
         Nifs nif = new Nifs();
         nif.corrigeNifs();
@@ -46,9 +47,9 @@ public class Main {
     	
         Nominas noms = new Nominas();
         List<Nomina> nominas = noms.generaNominas(mes, anyo);
-        for(Nomina n: nominas){
+        /*for(Nomina n: nominas){
             System.out.println(n.toString());
-        }
+        }*/
                    
         Xml xml = new Xml();
         xml.creaFicheroErrores();
