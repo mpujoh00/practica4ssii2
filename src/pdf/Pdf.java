@@ -10,9 +10,13 @@ import clases.Nomina;
 import clases.Trabajadorbbdd;
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.colors.Color;
 import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
@@ -53,9 +57,12 @@ public class Pdf{
         String ruta = "./resources/nominas/" + nombrePdf + ".pdf";        
         PdfWriter writer = new PdfWriter(ruta);
         PdfDocument pdf = new PdfDocument(writer);
-        Document documento = new Document(pdf);
+        Document documento = new Document(pdf, PageSize.A4);
                 
         PdfFont negritaCursiva = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLDOBLIQUE);
+        Color gris = new DeviceRgb(221,221,221);
+        Color rosaClaro = new DeviceRgb(244,228,238);
+        Color rosaOscuro = new DeviceRgb(233,201,223);
         
         Table fila1 = new Table(2);
         fila1.setWidth(520);
@@ -63,6 +70,7 @@ public class Pdf{
         // cuadro empresa               
         Cell celdaEmpresa = new Cell();
         celdaEmpresa.setBorder(new SolidBorder(1));
+        celdaEmpresa.setBackgroundColor(rosaClaro);
         celdaEmpresa.setWidth(200);
         celdaEmpresa.setTextAlignment(TextAlignment.CENTER);
         celdaEmpresa.setVerticalAlignment(VerticalAlignment.MIDDLE);
@@ -115,6 +123,7 @@ public class Pdf{
         // cuadro trabajador
         Cell celdaTrabajador = new Cell();
         celdaTrabajador.setBorder(new SolidBorder(1));
+        celdaTrabajador.setBackgroundColor(rosaClaro);
         celdaTrabajador.setWidth(130);
         celdaTrabajador.setPadding(10);
         celdaTrabajador.setTextAlignment(TextAlignment.RIGHT);
@@ -151,6 +160,8 @@ public class Pdf{
         Table tablaTrabajadorTitulos = new Table(UnitValue.createPercentArray(new float[]{2,1,1,1}));
         tablaTrabajadorTitulos.setBorder(Border.NO_BORDER);
         tablaTrabajadorTitulos.setWidth(520);
+        tablaTrabajadorTitulos.setBackgroundColor(gris);
+        
         Cell conceptos = new Cell();
         conceptos.add(new Paragraph("Conceptos").setFontSize(14));
         conceptos.setBorder(Border.NO_BORDER);
@@ -167,10 +178,12 @@ public class Pdf{
         deduccion.add(new Paragraph("Deducción").setFontSize(14));
         deduccion.setBorder(Border.NO_BORDER);
         deduccion.setTextAlignment(TextAlignment.RIGHT);
+        
         tablaTrabajadorTitulos.addCell(conceptos);
         tablaTrabajadorTitulos.addCell(cantidad);
         tablaTrabajadorTitulos.addCell(devengo);
         tablaTrabajadorTitulos.addCell(deduccion);
+        
         documento.add(tablaTrabajadorTitulos);
         documento.add(new LineSeparator(new SolidLine(1f)));
         
@@ -357,10 +370,10 @@ public class Pdf{
         totalDevengos.setBorder(Border.NO_BORDER);
         totalDevengos.setTextAlignment(TextAlignment.CENTER);
         
-        tablaTotales.addCell(totalDeduccionesTitulo);
+        tablaTotales.addCell(totalDevengosTitulo);
         tablaTotales.addCell(celdaEnBlanco.clone(true));
         tablaTotales.addCell(celdaEnBlanco.clone(true));
-        tablaTotales.addCell(totalDeducciones);
+        tablaTotales.addCell(totalDevengos);
         
         documento.add(tablaTotales);
         documento.add(new LineSeparator(new SolidLine(1f)));
@@ -392,9 +405,10 @@ public class Pdf{
         separador.setColor(ColorConstants.GRAY);
         documento.add(new LineSeparator(separador));
         
-        Table tablaTituloEmp = new Table(UnitValue.createPercentArray(new float[]{4,1}));
-        tablaTituloEmp.setBorder(Border.NO_BORDER);
-        tablaTituloEmp.setWidth(520);
+        Table tablaEmpresarioTitulos = new Table(UnitValue.createPercentArray(new float[]{4,1}));
+        tablaEmpresarioTitulos.setBorder(Border.NO_BORDER);
+        tablaEmpresarioTitulos.setWidth(520);
+        tablaEmpresarioTitulos.setBackgroundColor(gris);
         
         double baseEmpresario = 0.0;
         if(!nomina.getEsExtra())
@@ -409,13 +423,12 @@ public class Pdf{
         base.setBorder(Border.NO_BORDER);
         base.setTextAlignment(TextAlignment.RIGHT);
         
-        tablaTituloEmp.addCell(baseTitulo);
-        tablaTituloEmp.addCell(base);
+        tablaEmpresarioTitulos.addCell(baseTitulo);
+        tablaEmpresarioTitulos.addCell(base);
         
-        documento.add(tablaTituloEmp);
+        documento.add(tablaEmpresarioTitulos);
         documento.add(new LineSeparator(separador));
-        documento.add(new Paragraph("\n"));
-        
+                
         Table tablaEmpresario = new Table(UnitValue.createPercentArray(new float[]{4,1}));
         tablaEmpresario.setBorder(Border.NO_BORDER);
         tablaEmpresario.setWidth(520);
@@ -504,15 +517,17 @@ public class Pdf{
         
         Table tablaCosteTrabajador = new Table(2);
         tablaCosteTrabajador.setWidth(520);
+        tablaCosteTrabajador.setPadding(5);
         tablaCosteTrabajador.setBorder(new SolidBorder(2));
+        tablaCosteTrabajador.setBackgroundColor(rosaOscuro);
         
         Cell costeTrabajadorTitulo = new Cell();
-        costeTrabajadorTitulo.add(new Paragraph("COSTE TOTAL TRABAJADOR:").setFontColor(ColorConstants.RED));
+        costeTrabajadorTitulo.add(new Paragraph("COSTE TOTAL TRABAJADOR:"));
         costeTrabajadorTitulo.setBorder(Border.NO_BORDER);
         costeTrabajadorTitulo.setTextAlignment(TextAlignment.LEFT);
         costeTrabajadorTitulo.setVerticalAlignment(VerticalAlignment.MIDDLE);
         Cell costeTotalTrabajador = new Cell();
-        costeTotalTrabajador.add(new Paragraph("" + costeTrabajador).setFontColor(ColorConstants.RED));
+        costeTotalTrabajador.add(new Paragraph("" + costeTrabajador));
         costeTotalTrabajador.setBorder(Border.NO_BORDER);
         costeTotalTrabajador.setTextAlignment(TextAlignment.RIGHT);
         costeTotalTrabajador.setVerticalAlignment(VerticalAlignment.MIDDLE);

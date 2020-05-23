@@ -36,53 +36,49 @@ public class TrabajadorDAO {
         
         Trabajadorbbdd seleccionado = null;
         
-        try{
-            
-            String consulta = "FROM Trabajadorbbdd t WHERE t.nifnie = :param";
-            
+        try{            
+            String consulta = "FROM Trabajadorbbdd t WHERE t.nifnie = :param";            
             Query query = sesion.createQuery(consulta);
             query.setParameter("param", nif);
             
             List listaRes = query.list();
             
-            if(!listaRes.isEmpty()){
-                
+            if(!listaRes.isEmpty()){                
                 seleccionado = (Trabajadorbbdd) listaRes.get(0);
-            }
-                        
+            }                       
         }
         catch(Exception e){ e.printStackTrace();}
         
         return seleccionado;
     }
     
+    public void insertaTrabajador(Trabajadorbbdd trabajador){
+        
+        
+    }
+    
     public void borraTrabajador(String nifTrabajador){
         
         NominaDAO nDAO = new NominaDAO();
         
-        // obtengo al trabajador
-        
+        // obtengo al trabajador        
         Trabajadorbbdd trabajador = obtenerTrabajador(nifTrabajador);
         
-        // borro la nómina del trabajador
-                
+        // borro la nómina del trabajador                
         Set noms = trabajador.getNominas();
         List nominas = new ArrayList();
         nominas.addAll(noms);
         
         for(int i=0; i<nominas.size(); i++){
             
-            Nomina nomina = (Nomina)nominas.get(i);
-            
+            Nomina nomina = (Nomina)nominas.get(i);            
             nDAO.borraNomina(nomina.getIdNomina());
         }
                
-        // borro al trabajador
-        
+        // borro al trabajador        
         tx = sesion.beginTransaction();
         
-        String consulta = "DELETE Trabajadorbbdd t WHERE t.nifnie = :param";
-        
+        String consulta = "DELETE Trabajadorbbdd t WHERE t.nifnie = :param";        
         Query query = sesion.createQuery(consulta);
         query.setParameter("param", nifTrabajador);
         
