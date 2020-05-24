@@ -6,6 +6,7 @@
 package main;
 
 import clases.Nomina;
+import clases.Trabajadorbbdd;
 import excel.Excel;
 import excel.Cuentas;
 import excel.Emails;
@@ -14,6 +15,7 @@ import excel.Nominas;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -53,8 +55,8 @@ public class Main {
                    
         Xml xml = new Xml();
         xml.creaFicheroErrores();
-        xml.creaFicheroErroresCCC(cuentasErrores);    
-        
+        xml.creaFicheroErroresCCC(cuentasErrores);   
+                
         Excel.close();
     }
     

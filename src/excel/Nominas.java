@@ -1,5 +1,6 @@
 package excel;
 
+import DAO.CategoriasDAO;
 import clases.Categorias;
 import clases.Nomina;
 import clases.Trabajadorbbdd;
@@ -19,6 +20,7 @@ public class Nominas {
     List<Categorias> categorias;
     Nomina nomina;
     int contNominas;
+    CategoriasDAO c;
     
     public Nominas(){
         
@@ -80,6 +82,7 @@ public class Nominas {
         
         // obtengo la categoría del trabajador
         Categorias categoria = trabajador.getCategorias();
+        c.insertarCategoria(categoria);
         
         // comprueba el prorrateo
         boolean prorrateo = trabajador.getProrrateo();
